@@ -5,6 +5,8 @@ export default function Home() {
   console.log("main stack");
 
   console.log('sub pr 1')
+
+  console.log('sub pr 2')
   return (
     <div className="mx-10 mt-10">
       <CategoriesList />
