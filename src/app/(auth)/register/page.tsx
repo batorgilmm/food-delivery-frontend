@@ -9,17 +9,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { BASE_URL } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider";
+
 const Register = () => {
-  const router = useRouter();
-  const [error, setError] = useState("");
+  const { register, error } = useAuth();
 
   const formSchema = z.object({
     email: z.string().min(2).max(50),
@@ -35,16 +31,7 @@ const Register = () => {
   });
 
   const onSubmit = async (val) => {
-    try {
-      const user = await axios.post(`${BASE_URL}/auth/register`, val);
-
-      if (user) {
-        toast("User successfully register.");
-        router.push("/login");
-      }
-    } catch (error) {
-      setError(error.response.data.error);
-    }
+    register(val);
   };
 
   return (
