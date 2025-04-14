@@ -12,11 +12,13 @@ import { Input } from "@/components/ui/input";
 import { BASE_URL } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { headers } from "next/headers";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const Admin = () => {
+  const [file, setFile] = useState("");
+
   const formSchema = z.object({
     name: z.string().min(2).max(50),
     price: z.string(),
@@ -34,16 +36,34 @@ const Admin = () => {
     },
   });
 
+  const UPLOAD_PRESET = "ml_default";
+  const CLOUD_NAME = "dfi8fm3l6";
+
   const onSubmit = async (val) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const { url } = await response.json();
+
     const token = localStorage.getItem("token");
-
-    const food = await axios.post(`${BASE_URL}/foods`, val, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    console.log(food);
+    const food = await axios.post(
+      `${BASE_URL}/foods`,
+      { ...val, image: url },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   };
 
   return (
@@ -89,13 +109,14 @@ const Admin = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                    <Input placeholder="Ingredients ..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
           <div className="my-4">
             <FormField
               control={form.control}
@@ -103,11 +124,18 @@ const Admin = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="Enter categoryF..." {...field} />
+                    <Input placeholder="Enter category..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
+            />
+          </div>
+
+          <div className="my-4">
+            <Input
+              type="file"
+              onChange={(event) => setFile(event?.target?.files[0])}
             />
           </div>
 
