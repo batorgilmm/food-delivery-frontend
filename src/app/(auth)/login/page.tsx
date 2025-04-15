@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { jwtDecode } from "jwt-decode";
 import {
   Form,
   FormControl,
@@ -10,17 +9,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { BASE_URL } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider";
+
+export type LoginType = {
+  email: string;
+  password: string;
+};
+
 const Login = () => {
-  const router = useRouter();
-  const [error, setError] = useState("");
+  const { login, error } = useAuth();
 
   const formSchema = z.object({
     email: z.string().min(2).max(50),
@@ -35,27 +35,8 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async (val) => {
-    try {
-      const user = await axios.post(`${BASE_URL}/auth/login`, val);
-
-      if (user) {
-        toast("User successfully register.");
-      }
-
-      localStorage.setItem("token", user.data.token);
-
-      const decodedToken = jwtDecode(user.data.token);
-
-      if (decodedToken.user.role == "ADMIN") {
-        router.push("/admin");
-        return;
-      } else {
-        router.push("/");
-      }
-    } catch (error) {
-      setError(error.response.data.error);
-    }
+  const onSubmit = async (val: LoginType) => {
+    login(val);
   };
 
   return (

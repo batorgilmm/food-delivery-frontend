@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { BASE_URL } from "@/constants";
+import { FoodType } from "@/providers/CartProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
@@ -17,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const Admin = () => {
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   const formSchema = z.object({
     name: z.string().min(2).max(50),
@@ -39,9 +40,9 @@ const Admin = () => {
   const UPLOAD_PRESET = "ml_default";
   const CLOUD_NAME = "dfi8fm3l6";
 
-  const onSubmit = async (val) => {
+  const onSubmit = async (val: Partial<FoodType>) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file as File);
     formData.append("upload_preset", UPLOAD_PRESET);
 
     const response = await fetch(
@@ -135,7 +136,7 @@ const Admin = () => {
           <div className="my-4">
             <Input
               type="file"
-              onChange={(event) => setFile(event?.target?.files[0])}
+              onChange={(event) => setFile((event.target.files as FileList)[0])}
             />
           </div>
 

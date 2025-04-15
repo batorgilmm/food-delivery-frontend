@@ -17,6 +17,16 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { LoginType } from "../login/page";
+
+export type ErrorType = {
+  response: {
+    data: {
+      error: string;
+    };
+  };
+};
+
 const Register = () => {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -34,7 +44,7 @@ const Register = () => {
     },
   });
 
-  const onSubmit = async (val) => {
+  const onSubmit = async (val: LoginType) => {
     try {
       const user = await axios.post(`${BASE_URL}/auth/register`, val);
 
@@ -42,8 +52,8 @@ const Register = () => {
         toast("User successfully register.");
         router.push("/login");
       }
-    } catch (error) {
-      setError(error.response.data.error);
+    } catch (error: unknown) {
+      setError((error as ErrorType).response.data.error);
     }
   };
 

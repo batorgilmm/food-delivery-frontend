@@ -1,8 +1,11 @@
+"use client";
 import { Badge } from "@/components/ui/badge";
 import { BASE_URL } from "@/constants";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 type CategoryType = {
+  _id: string;
   name: string;
 };
 
@@ -12,12 +15,15 @@ const getCategories = async () => {
   return categories;
 };
 
-export const CategoriesList = async () => {
-  const categories: CategoryType[] = await getCategories();
+export const CategoriesList = () => {
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    getCategories();
+  }, []);
 
   return (
     <div className="flex gap-2">
-      {categories.map((category) => (
+      {categories.map((category: CategoryType) => (
         <Link key={category._id} href={"/" + category.name}>
           <Badge className="rounded-full text-md" variant="outline">
             {category.name}
