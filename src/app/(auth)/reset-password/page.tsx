@@ -10,6 +10,9 @@ import { jwtDecode } from "jwt-decode";
 
 const Page = () => {
   console.log("testing stack pr 1");
+
+
+  console.log("testing stack pr 2");
   // batorgilmunkh88@gmail.com
   const [token, setToken] = useState<string | null>(null);
   const searchParams = useSearchParams();
